@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+<context:property-placeholder location="classpath:dbconn/db.properties"/>
+
+<!-- DBCP객체 선언 -->
+<bean class="org.apache.commons.dbcp2.BasicDataSource" id="dbcp_hanul">
+	<property name="driverClassName" value="${driver}"/>
+	<property name="url" value="${url}"/>
+	<property name="username" value="${hanul.username}" />
+	<property name="password" value="${hanul.password}" />
+</bean>
+<bean class="org.apache.commons.dbcp2.BasicDataSource" id="dbcp_hr">
+	<property name="driverClassName" value="${driver}"/>
+	<property name="url" value="${url}"/>
+	<property name="username" value="${hr.username}" />
+	<property name="password" value="${hr.password}" />
+</bean>
+
+<!-- DBCP와 Mybatis를 연결하기 위한 SqlSessionFactory객체 선언 -->
+<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="factory_hanul">
+	<property name="dataSource" ref="dbcp_hanul"/>
+	<property name="mapperLocations" value="classpath:sqlmap/*-mapper.xml"/>
+	<property name="configLocation" value="classpath:sqlmap/typeConfig.xml"/>
+</bean>
+<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="factory_hr">
+	<property name="dataSource" ref="dbcp_hr"/>
+	<property name="mapperLocations" value="classpath:sqlmap/*-mapper.xml"/>
+	<property name="configLocation" value="classpath:sqlmap/typeConfig.xml"/>
+</bean>
+
+<!-- 쿼리문실행기능을 가진 객체 선언 -->
+<bean class="org.mybatis.spring.SqlSessionTemplate" id="sql_hanul">
+<!-- 	<constructor-arg name="sqlSessionFactory" ref="factory"/> -->
+	<constructor-arg index="0" ref="factory_hanul"></constructor-arg>
+</bean>
+<bean class="org.mybatis.spring.SqlSessionTemplate" id="sql_hr">
+	<constructor-arg index="0" ref="factory_hr"></constructor-arg>
+</bean>
+
+
+<!-- 암호화에 사용할 객체 선언 -->
+<bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+
+</beans>

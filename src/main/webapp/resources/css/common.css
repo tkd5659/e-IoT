@@ -1,0 +1,101 @@
+@charset "UTF-8";
+
+body * { vertical-align: middle; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+table { width:100%; border-top: 2px solid #666; color: #666 }
+table th, table td {
+	border-right: 1px solid #dee2e6; padding: 10px 16px !important;
+}
+table th:last-child, table td:last-child { border-right:none }
+table.tb-list th, table.tb-list td { text-align: center; }
+table th { background-color: #eee !important; } 
+table.tb-list tr { height: 48px; }
+table.tb-row tr { height: 60px; }
+table.tb-list th{ padding-left: 0px  !important; padding-right: 0px !important;}
+a.text-link:hover { cursor:pointer; text-decoration: underline; font-weight: bold  }
+
+.ui-datepicker table th, .ui-datepicker table td {
+	padding:0 !important; border-right: none !important; }
+	
+.profile { width:38px; height: 38px; border-radius: 50% }	
+.font-profile { font-size: 38px }
+.file-preview img {
+	max-height: 38px
+}
+input[type=file]{display:none}
+.date + .date-delete{
+	position: relative;
+	right: 34px;
+	display:none;
+	
+}
+textarea.form-control{
+	resize: none;
+	height: 350px;
+}
+.input-group .form-select{
+	width:100px ;
+	flex:initial;
+}
+#modal-image .modal-body img{ width:100%}
+.intput[type=file]{display:none}
+
+.comment textarea { height: 90px }
+
+
+.notify { 
+	display: inline-block;
+	position: relative;
+	left: -15px;		top: -12px;
+	min-width: 20px;
+	line-height: 14px; 
+	padding: 4px;
+	font-size: 14px; font-weight: bold;
+	text-align: center;
+}
+
+.notify-on {
+	background-color: #dc3545;
+	color: #fff;
+	border-radius: 50%;
+}
+
+#comment-notify + .dropdown-menu-end { right: 25px }
+
+#dropdown-list .dropdown-header {
+	background-color: #0d6efd;
+	color: #fff;
+	border: 1px solid #0d6efd;
+}
+#dropdown-list {
+	font-size: 14px;
+	width: 350px;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	box-shadow: 0px 2px 6px #666;
+}
+
+
+.w-80 { width:80% }
+.w-px50 { width:50px }
+.w-px60 { width:60px }
+.w-px70 { width:70px }
+.w-px80 { width:80px }
+.w-px90 { width:90px }
+.w-px100 { width:100px }
+.w-px120 { width:120px }
+.w-px140 { width:140px }
+.w-px150 { width:150px }
+.w-px160 { width:160px }
+.w-px180 { width:180px }
+.w-px200 { width:200px }
+.w-px220 { width:220px }
+.w-px250 { width:250px }
+.w-px280 { width:280px }
+.w-px300 { width:300px }
+.w-px350 { width:350px }
+.w-px400 { width:400px }
+
+

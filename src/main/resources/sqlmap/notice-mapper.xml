@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice">
+
+
+
+<!-- 선택한 공지글 삭제 -->
+<delete id="delete">
+delete from notice where id = #{id}
+
+</delete>
+
+
+
+<!-- 선택한 공지글 변경저장 -->
+<update id="update">
+update notice 
+set title = #{title}, content = #{content}
+,filename = #{filename, jdbcType=VARCHAR}
+,filepath = #{filepath, jdbcType=VARCHAR}
+where id = #{id}
+</update>
+
+
+
+<!-- 선택한 공지글 정보 조회수 증가 -->
+<update id ="read">
+update notice set readcnt = readcnt + 1
+where id = #{id}
+
+</update>
+
+
+<!-- 선택한 공지글정보조회 -->
+<select id ="info" resultType="notice">
+
+select n.*, name 
+from notice n left outer join member m on writer = userid
+where id = #{id}
+
+</select>
+
+<sql id="searchWhere">
+<choose>
+	<when test=" search =='tc' ">
+	where title 	like  '%' || #{keyword} || '%'
+	or    content 	like  '%' || #{keyword} || '%'
+	</when>
+	<when test=" search =='all' ">
+	where title 	like  '%' || #{keyword} || '%'
+	or    content 	like  '%' || #{keyword} || '%'
+	or    writer in (select userid from member where name like  '%' || #{keyword} || '%') 
+	</when>
+	<when test=" search=='title' or search=='content'">
+	where ${search} like  '%' || #{keyword} || '%'
+	</when>
+	<when test=" search=='writer' ">
+	where writer in (select userid from member where name like  '%' || #{keyword} || '%') 
+	</when>
+</choose>
+</sql>
+
+<!-- 공지글 총건수 -->
+<select id="totalCount" resultType="integer">
+select count(*) from notice <include refid="searchWhere"/>
+</select>
+
+<!-- 공지글목록조회 -->
+<select id="list" resultType="notice"> 
+select * 
+from (select name,  row_number() over(order by root, step desc) no,   n.*
+      from notice n inner join member m on writer = userid 
+      <include refid="searchWhere"/>) n
+where no between #{beginList} and #{endList}
+order by no desc
+<!--  
+select name, row_number() over(order by id) no, n.*
+from notice n inner join member m on writer = userid
+order by no desc
+-->
+</select>
+
+<!-- 답글신규저장 -->
+<insert id="reply_register">
+insert into notice (title, content, writer, filename, filepath, root, rid, step, indent)
+values ( #{title}, #{content}, #{writer}
+		, #{filename, jdbcType=VARCHAR}, #{filepath, jdbcType=VARCHAR}
+		,#{root}, #{rid}, #{step}+1, #{indent}+1 )
+</insert>
+
+<!-- 공지글신규저장 -->
+<insert id="register">
+insert into notice (title, content, writer, filename, filepath)
+values ( #{title}, #{content}, #{writer}
+		, #{filename, jdbcType=VARCHAR}, #{filepath, jdbcType=VARCHAR} )
+</insert>
+
+</mapper>

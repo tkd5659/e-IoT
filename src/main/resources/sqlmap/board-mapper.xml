@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+<!-- 사용자의 미확인 댓글 확인처리 -->
+<update id="commentRead">
+update board_comment set notify = 1 
+where board_id in (select id from board where writer = #{userid}) and notify = 0
+</update>
+
+<!-- 사용자의 미확인 댓글목록 조회 -->
+<select id="commentNotify" resultType="comment">
+select name
+	, case when trunc( (sysdate-writedate)*24*60 )=0 then trunc( (sysdate-writedate) *24*60*60 ) || '초 전'
+            when trunc( (sysdate-writedate)*24 )=0 then trunc( (sysdate-writedate) *24*60 ) || '분 전'
+            when trunc(sysdate-writedate)=0 then trunc( (sysdate-writedate) *24 ) || '시간 전'
+            else to_char(writedate, 'yyyy-mm-dd')
+      end writedate, c.*
+from board_comment c inner join member on writer = userid
+where board_id in (select id from board where writer = #{userid}) and notify = 0
+order by id desc
+</select>
+
+
+<!-- 미확인 댓글수 조회 -->
+<select id="commentCount" resultType="integer">
+select count(*) 
+from board_comment
+where board_id in (select id from board where writer = #{receiver} ) and notify=0
+</select>
+
+<!-- 댓글 삭제 -->
+<delete id="commentDelete">
+delete from board_comment
+where id = #{id}
+</delete>
+
+<!-- 댓글 변경 저장 -->
+<update id="commentUpdate">
+update board_comment
+set content = #{content}
+where id = #{id}
+</update>
+
+<!-- 댓글 정보 조회 -->
+<select id="commentInfo" resultType="comment">
+select * from board_comment where id = #{id}
+</select>
+
+<!-- 댓글 목록 조회 -->
+<select id="commentList" resultType="comment">
+select c.*, name, profile 
+from board_comment c left outer join member m
+on c.writer = m.userid
+where board_id = #{board_id}
+order by c.id desc
+</select>
+
+<!-- 댓글 신규 저장 -->
+<insert id="commentRegister">
+insert into board_comment ( content, writer, board_id )
+values ( #{content}, #{writer}, #{board_id} )
+</insert>
+
+<!-- 선택한 방명록글 삭제  -->
+<delete id="delete">
+delete from board where id = #{id}
+</delete>
+
+<!-- 선택한 방명록글 변경저장  -->
+<update id="update">
+update board
+set title = #{title}, content = #{content}
+where id = #{id}
+</update>
+
+<!-- 선택한 방명록글 조회수 증가처리  -->
+<update id="read">
+update board set readcnt = readcnt + 1
+where id = #{id}
+</update>
+
+<!-- 선택한 방명록글 조회  -->
+<select id="info" resultType="board">
+select b.*, name  
+from board b inner join member on writer = userid 
+where id = #{id}
+</select>
+
+<!--삭제대상인 첨부파일목록 조회 -->
+<select id="removeFiles" resultType="file">
+select * from board_file where id in ( ${remove} )
+</select>
+
+
+<!-- 방명록 첨부파일저장 -->
+<insert id="fileRegister">
+<foreach collection="files" item="file" separator=" "
+			open="insert all" close="select * from dual" >
+	into board_file (board_id, filename, filepath)
+	values ( #{id}, #{file.filename}, #{file.filepath} )
+</foreach>
+</insert>
+
+<!-- 방명록 새글저장 -->
+<insert id="register" >
+<!-- 저장후 board의 PK인 시퀀스 값을 조회해서 데이터객체의 id 필드에 담기 -->
+<selectKey order="AFTER" resultType="integer" keyProperty="id">
+select seq_board.currval from dual 
+</selectKey>
+
+insert into board ( title, content, writer )
+values ( #{title}, #{content}, #{writer} )
+</insert>
+
+<!-- 첨부된 파일정보들 삭제 -->
+<delete id="fileDelete">
+delete from board_file where id in ( ${remove} )
+</delete>
+
+<!-- 첨부된 파일정보 조회 -->
+<select id="fileInfo" resultType="file">
+select * from board_file where id = #{id}
+</select>
+
+<!-- 첨부된 파일목록 조회 -->
+<select id="files" resultType="file">
+select * from board_file where board_id = #{id}
+</select>
+
+<!-- 검색조건 -->
+<sql id="searchWhere">
+<choose>
+	<when test="search == 'S1' "><!-- 전체 -->
+		where title like '%' || #{keyword} || '%'
+		or  content like '%' || #{keyword} || '%'
+		or  writer in (select userid from member where name like '%' || #{keyword} || '%') 
+	</when>
+	<when test="search == 'S2' "><!-- 제목 -->
+		where title like '%' || #{keyword} || '%'
+	</when>
+	<when test="search == 'S3' "><!-- 내용 -->
+		where content like '%' || #{keyword} || '%'
+	</when>
+	<when test="search == 'S4' "><!-- 작성자 -->
+		where writer in (select userid from member where name like '%' || #{keyword} || '%')
+	</when>
+	<when test="search == 'S5' "><!-- 제목+내용 -->
+		where title like '%' || #{keyword} || '%'
+		or  content like '%' || #{keyword} || '%'
+	</when>
+</choose>
+
+</sql>
+
+<!-- 총 글의 건수조회 -->
+<select id="totalCount" resultType="integer">
+select count(id) from board <include refid="searchWhere"/>
+</select>
+<!-- 각 페이지의 목록조회 -->
+<select id="list" resultType="board">
+select b.*, (select count(*) from board_file where board_id = b.id) filecnt, commentcnt, notifycnt
+from (select name, row_number() over(order by id) no, b.*
+      from board b inner join member m on userid = writer  
+      <include refid="searchWhere"/>) b 
+      left outer join (select board_id, count(*) commentcnt, count( case when notify=0 then 0 end) notifycnt  
+                       from board_comment
+                       group by board_id) c on b.id = c.board_id
+where no between #{beginList} and #{endList}      
+order by no desc
+</select>
+	
+</mapper>
