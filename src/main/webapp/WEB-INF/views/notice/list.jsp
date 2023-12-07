@@ -51,7 +51,7 @@
 	<c:forEach items="${page.list }" var="vo">
 	<tr><td>${vo.no}</td>
 		<td class="text-start">
-			<span style="margin-left:${vo.indent*20}px"></span>
+			<span style="margin-left:${vo.indent*15}px"></span>
 			<c:if test="${vo.indent > 0}"><i class="fa-regular fa-comment-dots"></i></c:if>
 			
 			<a class="text-link" 

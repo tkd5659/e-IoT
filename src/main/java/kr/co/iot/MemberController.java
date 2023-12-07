@@ -38,7 +38,7 @@ public class MemberController {
 //callback url: http://localhost:80/iot/member/naverCallback
 	private String NAVER_ID = "sZLlWam2nwpEME3qNCHz";
 	private String NAVER_SECRET = "F0QGFbtmSv";
-	private String KAKAO_ID = "b593c090ebd4ec6cb8d068c6cbcfdfe3";
+	private String KAKAO_ID = "f5ffaad80fb4f676c9d12a5c5e868e83";
 	
 	
 	//회원가입화면요청

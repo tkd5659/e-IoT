@@ -34,7 +34,7 @@
 	</td>
 </tr>
 </table>
-<input type="hidden" name="writer" value="${loginInfo.userid }">
+<input type="hidden" name="writer" value="${loginInfo.userid}">
 </form>
 
 <div class="btn-toolbar gap-2 justify-content-center my-3">
@@ -43,12 +43,12 @@
 </div>
 
 <script>
+$('#btn-cancel').on('click', function(){
+	history.go(-1)	
+})
+
 $('#btn-save').click(function(){
 	if( emptyCheck() )
-		$('form').submit()
-})
-$('#btn-save').click(function(){
-	if ( emptyCheck() )
 		$('form').submit()
 })
 

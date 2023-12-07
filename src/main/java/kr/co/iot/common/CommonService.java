@@ -59,7 +59,7 @@ public class CommonService {
 	}
 	
 	private String ipToDisc( String path, HttpServletRequest request ) {
-		String ip = "http://192.168.0.56";
+		String ip = "http://192.168.0.27";
 		ip += ":" + request.getServerPort(); //  http://192.168.0.66:80
 		// http://192.168.0.66:80 또는 http://localhost:80 -->  d://app 로 변경되어야 함
 		path = path	.replace(ip, "d://app")
@@ -120,7 +120,7 @@ public class CommonService {
 		
 		
 		//다른ip에서 저장된 파일도 보여질수 있도록 localhost는 실제ip로 처리
-		String url = appURL(request).replace("localhost", "192.168.0.56");
+		String url = appURL(request).replace("localhost", "192.168.0.27");
 		return  url + upload + "/" + filename;
 	}
 	

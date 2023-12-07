@@ -71,7 +71,14 @@ $(function(){
 		$('.file-name').after(
 				"<span class='file-preview'><img src='${vo.filepath}'></span>" )
 	}
-
+	
+	$('.file-preview img').click(function(){
+		if( $('#modal-image').length==1 ){ //이미지띄울 모달이 있으면
+			$('#modal-image .modal-body').html( $(this).clone() )
+			new bootstrap.Modal(  $('#modal-image') ).show()	
+		}
+	})
+	
 })
 
 //모달이미지 배경클릭시 이미지 삭제
